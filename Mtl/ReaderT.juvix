@@ -43,7 +43,12 @@ ReaderT-Monad
       (x : ReaderT S M A)
       (f : A → ReaderT S M B)
       : ReaderT S M B :=
-      mkReaderT λ{s := Monad.bind (runReader s x) λ{a := runReader s (f a)}};
+      mkReaderT
+        λ{s :=
+          do {
+            a <- runReader s x;
+            runReader s (f a);
+          }};
   };
 
 import Mtl.MonadReader open;
@@ -80,4 +85,9 @@ ReaderT-MonadTrans {R : Type} : MonadTrans (ReaderT R) :=
 
 liftStateT
   {S A : Type} {M : Type → Type} {{Monad M}} (m : M A) : StateT S M A :=
-  mkStateT λ{s := Monad.bind m λ{a := Applicative.pure (a, s)}};
+  mkStateT
+    λ{s :=
+      do {
+        a <- m;
+        Applicative.pure (a, s);
+      }};

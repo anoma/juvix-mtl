@@ -64,7 +64,6 @@ instance
 ExceptT-Except
   {Err} {M : Type -> Type} {{mon : Monad M}} : Except Err (ExceptT Err M) :=
   mkExcept@{
-    monad := ExceptT-Monad;
     throw {A} (err : Err) : ExceptT Err M A := mkExceptT (pure (error err));
   };
 

@@ -71,7 +71,6 @@ instance
 StateT-State
   {S : Type} {M : Type → Type} {{Monad M}} : State S (StateT S M) :=
   mkState@{
-    monad := StateT-Monad;
     get : StateT S M S := mkStateT λ{s := Applicative.pure (s, s)};
     put (s : S) : StateT S M Unit :=
       mkStateT λ{_ := Applicative.pure (unit, s)};

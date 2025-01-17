@@ -62,7 +62,6 @@ instance
 ReaderT-Reader
   {S : Type} {M : Type → Type} {{Monad M}} : Reader S (ReaderT S M) :=
   mkReader@{
-    monad := ReaderT-Monad;
     ask : ReaderT S M S := mkReaderT λ{s := Applicative.pure s};
     local {A : Type} (f : S → S) : ReaderT S M A -> ReaderT S M A
       | (mkReaderT l) := mkReaderT \{s := l (f s)};

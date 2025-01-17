@@ -1,10 +1,10 @@
-module Mtl.Identity;
+module Mtl.Data.Identity;
 
 import Stdlib.Prelude open;
 
 type Identity (a : Type) :=
   mkIdentity@{
-    runIdentity : a;
+    run : a;
   };
 
 open Identity public;

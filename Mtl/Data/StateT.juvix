@@ -1,7 +1,9 @@
-module Mtl.StateT;
+module Mtl.Data.StateT;
 
 import Stdlib.Prelude open;
-
+import Mtl.Trait.State open;
+import Mtl.Trait.MonadTransformer open;
+-- TODO MonadTransformer instance
 type StateT (S : Type) (M : Type → Type) (A : Type) :=
   mkStateT@{
     runStateT : S → M (Pair A S);
@@ -64,12 +66,11 @@ StateT-Monad
           StateT.runStateT x s >>= λ{(a, s') := StateT.runStateT (f a) s'}};
   };
 
-import Mtl.MonadState open;
 
 instance
-StateT-MonadState
-  {S : Type} {M : Type → Type} {{Monad M}} : MonadState S (StateT S M) :=
-  mkMonadState@{
+StateT-State
+  {S : Type} {M : Type → Type} {{Monad M}} : State S (StateT S M) :=
+  mkState@{
     monad := StateT-Monad;
     get : StateT S M S := mkStateT λ{s := Applicative.pure (s, s)};
     put (s : S) : StateT S M Unit :=

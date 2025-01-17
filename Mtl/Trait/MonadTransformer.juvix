@@ -1,0 +1,11 @@
+module Mtl.Trait.MonadTransformer;
+
+import Stdlib.Prelude open;
+
+trait
+type MonadTransformer (T : (Type -> Type) -> Type -> Type) :=
+  mkMonadTransformer@{
+    lift : {A : Type} -> {M : Type -> Type} -> {{Monad M}} -> M A -> T M A;
+  };
+
+open MonadTransformer public;

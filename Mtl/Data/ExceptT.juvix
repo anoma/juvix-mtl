@@ -1,6 +1,6 @@
-module Mtl.ExceptT;
+module Mtl.Data.ExceptT;
 
-import Mtl.MonadError open;
+import Mtl.Trait.Except open;
 import Stdlib.Prelude open;
 
 type ExceptT (Err : Type) (M : Type → Type) (A : Type) :=
@@ -61,9 +61,9 @@ ExceptT-Monad
   };
 
 instance
-ExceptT-MonadError
-  {Err} {M : Type -> Type} {{mon : Monad M}} : MonadError Err (ExceptT Err M) :=
-  mkMonadError@{
+ExceptT-Except
+  {Err} {M : Type -> Type} {{mon : Monad M}} : Except Err (ExceptT Err M) :=
+  mkExcept@{
     monad := ExceptT-Monad;
     throw {A} (err : Err) : ExceptT Err M A := mkExceptT (pure (error err));
   };

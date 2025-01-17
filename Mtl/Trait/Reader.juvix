@@ -1,13 +1,13 @@
-module Mtl.MonadReader;
+module Mtl.Trait.Reader;
 
 import Stdlib.Prelude open;
 
 trait
-type MonadReader (S : Type) (M : Type -> Type) :=
-  mkMonadReader@{
+type Reader (S : Type) (M : Type -> Type) :=
+  mkReader@{
     {{monad}} : Monad M;
     ask : M S;
     local : {A : Type} → (S -> S) -> M A → M A;
   };
 
-open MonadReader hiding {monad} public;
+open Reader hiding {monad} public;

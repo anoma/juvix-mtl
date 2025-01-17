@@ -1,21 +1,21 @@
-module Mtl.MonadState;
+module Mtl.Trait.State;
 
 import Stdlib.Prelude open;
 
 trait
-type MonadState (S : Type) (M : Type -> Type) :=
-  mkMonadState@{
+type State (S : Type) (M : Type -> Type) :=
+  mkState@{
     {{monad}} : Monad M;
     get : M S;
     put : S -> M Unit;
   };
 
-open MonadState hiding {monad} public;
+open State hiding {monad} public;
 
 modify
   {S : Type}
   {M : Type → Type}
   {{Monad M}}
-  {{MonadState S M}}
+  {{State S M}}
   (f : S → S)
   : M Unit := get >>= λ{s := put (f s)};

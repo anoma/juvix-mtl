@@ -1,8 +1,8 @@
-module Mtl.ReaderT;
+module Mtl.Data.ReaderT;
 
 import Stdlib.Prelude open;
-import Mtl.MonadTrans open;
-import Mtl.MonadTrans open using {module MonadTrans as MMonadTrans};
+import Mtl.Trait.MonadTransformer open;
+import Mtl.Trait.MonadTransformer open using {module MonadTransformer as MMonadTransformer};
 
 type ReaderT (S : Type) (M : Type → Type) (A : Type) :=
   mkReaderT@{
@@ -51,34 +51,34 @@ ReaderT-Monad
           }};
   };
 
-import Mtl.MonadReader open;
-import Mtl.MonadError open;
-import Mtl.MonadError open using {module MonadError as MMonadError};
-import Mtl.MonadReader open using {module MonadReader as MMonadReader};
+import Mtl.Trait.Reader open;
+import Mtl.Trait.Except open;
+import Mtl.Trait.Except open using {module Except as MExcept};
+import Mtl.Trait.Reader open using {module Reader as MReader};
 import Stdlib.Data.Unit open;
 import Stdlib.Function open;
 
 instance
-ReaderT-MonadReader
-  {S : Type} {M : Type → Type} {{Monad M}} : MonadReader S (ReaderT S M) :=
-  mkMonadReader@{
+ReaderT-Reader
+  {S : Type} {M : Type → Type} {{Monad M}} : Reader S (ReaderT S M) :=
+  mkReader@{
     monad := ReaderT-Monad;
     ask : ReaderT S M S := mkReaderT λ{s := Applicative.pure s};
     local {A : Type} (f : S → S) : ReaderT S M A -> ReaderT S M A
       | (mkReaderT l) := mkReaderT \{s := l (f s)};
   };
 
-import Mtl.MonadState open;
-import Mtl.StateT open;
-import Mtl.Identity open;
+import Mtl.Trait.State open;
+import Mtl.Data.StateT open;
+import Mtl.Data.Identity open;
 import Stdlib.Data.Pair open;
 
 liftReaderT {R A : Type} {M : Type → Type} (m : M A) : ReaderT R M A :=
   mkReaderT (const m);
 
 instance
-ReaderT-MonadTrans {R : Type} : MonadTrans (ReaderT R) :=
-  mkMonadTrans@{
+ReaderT-MonadTransformer {R : Type} : MonadTransformer (ReaderT R) :=
+  mkMonadTransformer@{
     lift {A : Type} {M : Type -> Type} {{Monad M}} (x : M A) : ReaderT R M A :=
       liftReaderT x;
   };

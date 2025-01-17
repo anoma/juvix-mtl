@@ -1,0 +1,12 @@
+module Mtl.Trait.Except;
+
+import Stdlib.Prelude open;
+
+trait
+type Except (Err : Type) (M : Type -> Type) :=
+  mkExcept@{
+    {{monad}} : Monad M;
+    throw : {A : Type} -> Err -> M A;
+  };
+
+open Except hiding {monad} public;

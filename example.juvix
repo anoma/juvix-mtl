@@ -1,0 +1,13 @@
+module example;
+
+import Mtl open;
+import Stdlib.Prelude open;
+
+type T := mkT;
+
+working {A B} {M : Type -> Type} {{Monad M}} (f : A -> B) : M A -> M B :=
+ map f;
+
+notWorking {M : Type -> Type} {{MonadReader T M}} : M T := do {
+  bind ask (const ask)
+};

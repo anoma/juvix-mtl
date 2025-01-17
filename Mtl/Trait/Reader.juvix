@@ -6,7 +6,6 @@ trait
 type Reader (S : Type) (M : Type -> Type) :=
   mkReader@{
     ask : M S;
-    local : {A : Type} → (S -> S) -> M A → M A;
   };
 
 open Reader public;

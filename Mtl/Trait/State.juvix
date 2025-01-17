@@ -12,9 +12,5 @@ type State (S : Type) (M : Type -> Type) :=
 open State public;
 
 modify
-  {S : Type}
-  {M : Type → Type}
-  {{Monad M}}
-  {{State S M}}
-  (f : S → S)
-  : M Unit := get >>= λ{s := put (f s)};
+  {S : Type} {M : Type → Type} {{Monad M}} {{State S M}} (f : S → S) : M Unit :=
+  get >>= λ{s := put (f s)};

@@ -2,7 +2,9 @@ module Mtl.Data.ReaderT;
 
 import Stdlib.Prelude open;
 import Mtl.Trait.MonadTransformer open;
-import Mtl.Trait.MonadTransformer open using {module MonadTransformer as MMonadTransformer};
+import Mtl.Trait.MonadTransformer open using {
+  module MonadTransformer as MMonadTransformer;
+};
 
 type ReaderT (S : Type) (M : Type → Type) (A : Type) :=
   mkReaderT@{

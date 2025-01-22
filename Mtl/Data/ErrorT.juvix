@@ -90,4 +90,6 @@ ErrorT-Reader
   : Reader R (ErrorT E M) :=
   mkReader@{
     ask : ErrorT E M R := mkErrorT (ok <$> Reader.ask);
+    local {A} (f : R -> R) (m : ErrorT E M A) : ErrorT E M A :=
+      mkErrorT (Reader.local f (runError m));
   };

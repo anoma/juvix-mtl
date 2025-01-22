@@ -3,9 +3,10 @@ module Mtl.Trait.Reader;
 import Stdlib.Prelude open;
 
 trait
-type Reader (S : Type) (M : Type -> Type) :=
+type Reader (R : Type) (M : Type -> Type) :=
   mkReader@{
-    ask : M S;
+    ask : M R;
+    local : {A : Type} -> (R -> R) -> M A -> M A;
   };
 
 open Reader public;

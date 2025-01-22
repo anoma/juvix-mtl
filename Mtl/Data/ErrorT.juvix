@@ -1,12 +1,17 @@
 module Mtl.Data.ErrorT;
 
 import Mtl.Trait.Error open;
+import Mtl.Trait.State open;
+import Mtl.Trait.Reader open;
 import Stdlib.Prelude open;
 
 type ErrorT (Err : Type) (M : Type → Type) (A : Type) :=
   mkErrorT@{
     runErrorT : M (Result Err A);
   };
+
+runError {Err A} {M : Type -> Type} : ErrorT Err M A -> M (Result Err A) :=
+  ErrorT.runErrorT;
 
 instance
 ErrorT-Functor
@@ -49,10 +54,10 @@ ErrorT-Monad
       {A B} (x : ErrorT Err M A) (f : A -> ErrorT Err M B) : ErrorT Err M B :=
       mkErrorT
         do {
-          a <- ErrorT.runErrorT x;
+          a <- runError x;
           case a of {
             | error e := pure (error e)
-            | ok r := ErrorT.runErrorT (f r)
+            | ok r := runError (f r)
           };
         };
   };
@@ -64,5 +69,25 @@ ErrorT-Error
     throw {A} (err : Err) : ErrorT Err M A := mkErrorT (pure (error err));
   };
 
-runError {Err A} {M : Type -> Type} : ErrorT Err M A -> M (Result Err A)
-  | (mkErrorT x) := x;
+instance
+ErrorT-State
+  {E S : Type}
+  {M : Type → Type}
+  {{Monad M}}
+  {{State S M}}
+  : State S (ErrorT E M) :=
+  mkState@{
+    state {A : Type} (f : S -> Pair A S) : ErrorT E M A :=
+      mkErrorT (ok <$> State.state f);
+  };
+
+instance
+ErrorT-Reader
+  {E R : Type}
+  {M : Type → Type}
+  {{Monad M}}
+  {{Reader R M}}
+  : Reader R (ErrorT E M) :=
+  mkReader@{
+    ask : ErrorT E M R := mkErrorT (ok <$> Reader.ask);
+  };

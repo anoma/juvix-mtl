@@ -1,10 +1,10 @@
 module Mtl.Data.ReaderT;
 
 import Stdlib.Prelude open;
+import Mtl.Trait.Reader open;
+import Mtl.Trait.Error open;
+import Mtl.Trait.State open;
 import Mtl.Trait.MonadTransformer open;
-import Mtl.Trait.MonadTransformer open using {
-  module MonadTransformer as MMonadTransformer;
-};
 
 type ReaderT (S : Type) (M : Type → Type) (A : Type) :=
   mkReaderT@{
@@ -53,24 +53,12 @@ ReaderT-Monad
           }};
   };
 
-import Mtl.Trait.Reader open;
-import Mtl.Trait.Error open;
-import Mtl.Trait.Error open using {module Error as MError};
-import Mtl.Trait.Reader open using {module Reader as MReader};
-import Stdlib.Data.Unit open;
-import Stdlib.Function open;
-
 instance
 ReaderT-Reader
   {S : Type} {M : Type → Type} {{Monad M}} : Reader S (ReaderT S M) :=
   mkReader@{
     ask : ReaderT S M S := mkReaderT λ{s := Applicative.pure s};
   };
-
-import Mtl.Trait.State open;
-import Mtl.Data.StateT open;
-import Mtl.Data.Identity open;
-import Stdlib.Data.Pair open;
 
 liftReaderT {R A : Type} {M : Type → Type} (m : M A) : ReaderT R M A :=
   mkReaderT (const m);
@@ -82,11 +70,26 @@ ReaderT-MonadTransformer {R : Type} : MonadTransformer (ReaderT R) :=
       liftReaderT x;
   };
 
-liftStateT
-  {S A : Type} {M : Type → Type} {{Monad M}} (m : M A) : StateT S M A :=
-  mkStateT
-    λ{s :=
-      do {
-        a <- m;
-        Applicative.pure (a, s);
-      }};
+instance
+ReaderT-State
+  {R S : Type}
+  {M : Type → Type}
+  {{Monad M}}
+  {{State S M}}
+  : State S (ReaderT R M) :=
+  mkState@{
+    state {A : Type} (f : S -> Pair A S) : ReaderT R M A :=
+      mkReaderT \{_ := State.state f};
+  };
+
+instance
+ReaderT-Error
+  {R E : Type}
+  {M : Type → Type}
+  {{Monad M}}
+  {{Error E M}}
+  : Error E (ReaderT R M) :=
+  mkError@{
+    throw {A : Type} (err : E) : ReaderT R M A :=
+      mkReaderT \{_ := Error.throw err};
+  };

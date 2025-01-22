@@ -1,0 +1,68 @@
+module Mtl.Data.ErrorT;
+
+import Mtl.Trait.Error open;
+import Stdlib.Prelude open;
+
+type ErrorT (Err : Type) (M : Type → Type) (A : Type) :=
+  mkErrorT@{
+    runErrorT : M (Result Err A);
+  };
+
+instance
+ErrorT-Functor
+  {Err : Type} {M : Type -> Type} {{Functor M}} : Functor (ErrorT Err M) :=
+  mkFunctor@{
+    map {A B : Type} (f : A -> B) : ErrorT Err M A -> ErrorT Err M B
+      | (mkErrorT x) := mkErrorT (Functor.map (Functor.map f) x);
+  };
+
+instance
+ErrorT-Applicative
+  {Err : Type} {M : Type -> Type} {{Monad M}} : Applicative (ErrorT Err M) :=
+  mkApplicative@{
+    ap {A B} : ErrorT Err M (A -> B) -> ErrorT Err M A -> ErrorT Err M B
+      | (mkErrorT ef) (mkErrorT ev) :=
+        mkErrorT
+          do {
+            mf <- ef;
+            case mf of {
+              | error e := Applicative.pure (error e)
+              | ok f :=
+                do {
+                  mv <- ev;
+                  Applicative.pure
+                    case mv of {
+                      | error e := error e
+                      | ok v := ok (f v)
+                    };
+                }
+            };
+          };
+    pure {A} (a : A) : ErrorT Err M A := mkErrorT (Applicative.pure (ok a));
+  };
+
+instance
+ErrorT-Monad
+  {Err : Type} {M : Type -> Type} {{Monad M}} : Monad (ErrorT Err M) :=
+  mkMonad@{
+    bind
+      {A B} (x : ErrorT Err M A) (f : A -> ErrorT Err M B) : ErrorT Err M B :=
+      mkErrorT
+        do {
+          a <- ErrorT.runErrorT x;
+          case a of {
+            | error e := pure (error e)
+            | ok r := ErrorT.runErrorT (f r)
+          };
+        };
+  };
+
+instance
+ErrorT-Error
+  {Err} {M : Type -> Type} {{mon : Monad M}} : Error Err (ErrorT Err M) :=
+  mkError@{
+    throw {A} (err : Err) : ErrorT Err M A := mkErrorT (pure (error err));
+  };
+
+runError {Err A} {M : Type -> Type} : ErrorT Err M A -> M (Result Err A)
+  | (mkErrorT x) := x;

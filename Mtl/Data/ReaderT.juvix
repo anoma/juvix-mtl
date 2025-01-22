@@ -54,8 +54,8 @@ ReaderT-Monad
   };
 
 import Mtl.Trait.Reader open;
-import Mtl.Trait.Except open;
-import Mtl.Trait.Except open using {module Except as MExcept};
+import Mtl.Trait.Error open;
+import Mtl.Trait.Error open using {module Error as MError};
 import Mtl.Trait.Reader open using {module Reader as MReader};
 import Stdlib.Data.Unit open;
 import Stdlib.Function open;

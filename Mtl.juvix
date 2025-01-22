@@ -1,11 +1,11 @@
 module Mtl;
 
 import Mtl.Trait.Reader open public;
-import Mtl.Trait.Except open public;
+import Mtl.Trait.Error open public;
 import Mtl.Trait.Reader open public;
 import Mtl.Trait.State open public;
 import Mtl.Trait.MonadTransformer open public;
 import Mtl.Data.ReaderT open public;
 import Mtl.Data.StateT open public;
-import Mtl.Data.ExceptT open public;
+import Mtl.Data.ErrorT open public;
 import Mtl.Data.Identity open public;

@@ -1,0 +1,11 @@
+module Mtl.Trait.Error;
+
+import Stdlib.Prelude open;
+
+trait
+type Error (Err : Type) (M : Type -> Type) :=
+  mkError@{
+    throw : {A : Type} -> Err -> M A;
+  };
+
+open Error public;

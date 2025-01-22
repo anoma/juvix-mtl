@@ -90,5 +90,6 @@ ReaderT-Error
   {{Error E M}}
   : Error E (ReaderT R M) :=
   mkError@{
-    throw {A : Type} (err : E) : ReaderT R M A := mkReaderT \{_ := Error.throw err}
+    throw {A : Type} (err : E) : ReaderT R M A :=
+      mkReaderT \{_ := Error.throw err};
   };

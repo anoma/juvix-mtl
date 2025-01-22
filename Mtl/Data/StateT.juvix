@@ -64,7 +64,7 @@ StateT-Monad
 instance
 StateT-State {S : Type} {M : Type → Type} {{Monad M}} : State S (StateT S M) :=
   mkState@{
-    state {A : Type} (f : S -> Pair A S) : StateT S M A := mkStateT (f >> pure)
+    state {A : Type} (f : S -> Pair A S) : StateT S M A := mkStateT (f >> pure);
   };
 
 instance

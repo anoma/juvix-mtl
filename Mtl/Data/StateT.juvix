@@ -94,6 +94,8 @@ StateT-Reader
             r <- Reader.ask;
             pure (r, s);
           }};
+    local {A} (f : R -> R) (m : StateT S M A) : StateT S M A :=
+      mkStateT \{s := Reader.local f (runState s m)};
   };
 
 instance

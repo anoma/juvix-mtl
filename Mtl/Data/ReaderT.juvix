@@ -58,6 +58,8 @@ ReaderT-Reader
   {S : Type} {M : Type → Type} {{Monad M}} : Reader S (ReaderT S M) :=
   mkReader@{
     ask : ReaderT S M S := mkReaderT λ{s := Applicative.pure s};
+    local {A} (f : S -> S) (m : ReaderT S M A) : ReaderT S M A :=
+      mkReaderT \{s := runReader (f s) m};
   };
 
 liftReaderT {R A : Type} {M : Type → Type} (m : M A) : ReaderT R M A :=

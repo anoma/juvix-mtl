@@ -5,11 +5,16 @@ import Stdlib.Prelude open;
 trait
 type State (S : Type) (M : Type -> Type) :=
   mkState@{
-    get : M S;
-    put : S -> M Unit;
+    state : {A : Type} -> (S -> Pair A S) -> M A;
   };
 
 open State public;
+
+get {S} {M : Type -> Type} {{Monad M}} {{State S M}} : M S :=
+  state \{s := s, s};
+
+put {S} {M : Type -> Type} {{Monad M}} {{State S M}} (s : S) : M Unit :=
+  state \{_ := unit, s};
 
 modify
   {S : Type} {M : Type → Type} {{Monad M}} {{State S M}} (f : S → S) : M Unit :=

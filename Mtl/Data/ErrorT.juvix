@@ -3,6 +3,7 @@ module Mtl.Data.ErrorT;
 import Mtl.Trait.Error open;
 import Mtl.Trait.State open;
 import Mtl.Trait.Reader open;
+import Mtl.Trait.MonadTransformer open;
 import Stdlib.Prelude open;
 
 type ErrorT (Err : Type) (M : Type → Type) (A : Type) :=
@@ -92,4 +93,11 @@ ErrorT-Reader
     ask : ErrorT E M R := mkErrorT (ok <$> Reader.ask);
     local {A} (f : R -> R) (m : ErrorT E M A) : ErrorT E M A :=
       mkErrorT (Reader.local f (runError m));
+  };
+
+instance
+ErrorTMonadTransformerI {Err} : MonadTransformer (ErrorT Err) :=
+  mkMonadTransformer@{
+    lift {A} {M : Type -> Type} {{Monad M}} (m : M A) : ErrorT Err M A :=
+      mkErrorT (ok <$> m);
   };

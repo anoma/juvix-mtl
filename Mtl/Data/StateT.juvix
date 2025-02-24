@@ -7,7 +7,7 @@ import Mtl.Trait.Error open;
 import Mtl.Trait.MonadTransformer open;
 
 type StateT (S : Type) (M : Type → Type) (A : Type) :=
-  mkStateT@{
+  mk@{
     runStateT : S → M (Pair A S);
   };
 
@@ -26,19 +26,19 @@ evalState
 instance
 StateT-Functor
   {S : Type} {M : Type → Type} {{func : Functor M}} : Functor (StateT S M) :=
-  mkFunctor@{
+  Functor.mk@{
     map {A B : Type} (f : A → B) : StateT S M A → StateT S M B
-      | (mkStateT S→M⟨A×S⟩) :=
-        mkStateT λ{s := Functor.map λ{(a, s') := f a, s'} (S→M⟨A×S⟩ s)};
+      | (StateT.mk S→M⟨A×S⟩) :=
+        StateT.mk λ{s := Functor.map λ{(a, s') := f a, s'} (S→M⟨A×S⟩ s)};
   };
 
 instance
 StateT-Applicative
   {S : Type} {M : Type -> Type} {{Monad M}} : Applicative (StateT S M) :=
-  mkApplicative@{
+  Applicative.mk@{
     ap {A B} : StateT S M (A -> B) -> StateT S M A -> StateT S M B
-      | (mkStateT mf) (mkStateT mx) :=
-        mkStateT
+      | (StateT.mk mf) (StateT.mk mx) :=
+        StateT.mk
           \{s :=
             do {
               f, s' <- mf s;
@@ -46,32 +46,32 @@ StateT-Applicative
               Applicative.pure (f x, s'');
             }};
     pure {A : Type} (a : A) : StateT S M A :=
-      mkStateT λ{s := Applicative.pure (a, s)};
+      StateT.mk λ{s := Applicative.pure (a, s)};
   };
 
 instance
 StateT-Monad
   {S : Type} {M : Type → Type} {{mon : Monad M}} : Monad (StateT S M) :=
-  mkMonad@{
+  Monad.mk@{
     applicative := StateT-Applicative;
     bind
       {A B : Type} (x : StateT S M A) (f : A → StateT S M B) : StateT S M B :=
-      mkStateT
+      StateT.mk
         λ{s :=
           StateT.runStateT x s >>= λ{(a, s') := StateT.runStateT (f a) s'}};
   };
 
 instance
 StateT-State {S : Type} {M : Type → Type} {{Monad M}} : State S (StateT S M) :=
-  mkState@{
-    state {A : Type} (f : S -> Pair A S) : StateT S M A := mkStateT (f >> pure);
+  State.mk@{
+    state {A : Type} (f : S -> Pair A S) : StateT S M A := StateT.mk (f >> pure);
   };
 
 instance
 StateT-MonadTransformer {S : Type} : MonadTransformer (StateT S) :=
-  mkMonadTransformer@{
+  MonadTransformer.mk@{
     lift {A} {M : Type -> Type} {{Monad M}} (m : M A) : StateT S M A :=
-      mkStateT
+      StateT.mk
         \{s :=
           do {
             a <- m;
@@ -86,16 +86,16 @@ StateT-Reader
   {{Monad M}}
   {{Reader R M}}
   : Reader R (StateT S M) :=
-  mkReader@{
+  Reader.mk@{
     ask : StateT S M R :=
-      mkStateT
+      StateT.mk
         \{s :=
           do {
             r <- Reader.ask;
             pure (r, s);
           }};
     local {A} (f : R -> R) (m : StateT S M A) : StateT S M A :=
-      mkStateT \{s := Reader.local f (runState s m)};
+      StateT.mk \{s := Reader.local f (runState s m)};
   };
 
 instance
@@ -105,9 +105,9 @@ StateT-Except
   {{Monad M}}
   {{Error E M}}
   : Error E (StateT S M) :=
-  mkError@{
+  Error.mk@{
     throw {A} (err : E) : StateT S M A :=
-      mkStateT
+      StateT.mk
         \{s :=
           do {
             a <- Error.throw err;

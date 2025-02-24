@@ -4,9 +4,9 @@ import Stdlib.Prelude open;
 
 trait
 type Reader (R : Type) (M : Type -> Type) :=
-  mkReader@{
+  mk@{
     ask : M R;
     local : {A : Type} -> (R -> R) -> M A -> M A;
   };
 
-open Reader public;
+open Reader using {ask; local} public;

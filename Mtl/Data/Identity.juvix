@@ -11,14 +11,14 @@ open Identity public;
 
 instance
 Identity-Functor : Functor Identity :=
-  mkFunctor@{
+  Functor.mk@{
     map {A B : Type} (f : A -> B) : Identity A -> Identity B
       | (mkIdentity a) := mkIdentity (f a);
   };
 
 instance
 Identity-Applicative : Applicative Identity :=
-  mkApplicative@{
+  Applicative.mk@{
     pure := mkIdentity;
     ap {A B} : Identity (A -> B) -> Identity A -> Identity B
       | (mkIdentity f) (mkIdentity x) := mkIdentity (f x);
@@ -26,7 +26,7 @@ Identity-Applicative : Applicative Identity :=
 
 instance
 Identity-Monad : Monad Identity :=
-  mkMonad@{
+  Monad.mk@{
     bind {A B : Type} : Identity A -> (A -> Identity B) -> Identity B
       | (mkIdentity a) f := f a;
   };

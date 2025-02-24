@@ -4,8 +4,8 @@ import Stdlib.Prelude open;
 
 trait
 type Error (Err : Type) (M : Type -> Type) :=
-  mkError@{
+  mk@{
     throw : {A : Type} -> Err -> M A;
   };
 
-open Error public;
+open Error using {throw} public;

@@ -7,7 +7,7 @@ import Mtl.Trait.State open;
 import Mtl.Trait.MonadTransformer open;
 
 type ReaderT (S : Type) (M : Type → Type) (A : Type) :=
-  mkReaderT@{
+  mk@{
     runReaderT : S → M A;
   };
 
@@ -17,9 +17,9 @@ runReader {S A : Type} {M : Type → Type} (r : S) (m : ReaderT S M A) : M A :=
 instance
 ReaderT-Functor
   {S : Type} {M : Type → Type} {{Functor M}} : Functor (ReaderT S M) :=
-  mkFunctor@{
+  Functor.mk@{
     map {A B : Type} (f : A → B) : ReaderT S M A → ReaderT S M B
-      | (mkReaderT g) := mkReaderT λ{s := Functor.map λ{a := f a} (g s)};
+      | (ReaderT.mk g) := ReaderT.mk λ{s := Functor.map λ{a := f a} (g s)};
   };
 
 instance
@@ -28,24 +28,24 @@ ReaderT-Applicative
   {M : Type → Type}
   {{func : Applicative M}}
   : Applicative (ReaderT S M) :=
-  mkApplicative@{
-    pure {A} (a : A) : ReaderT S M A := mkReaderT \{s := Applicative.pure a};
+  Applicative.mk@{
+    pure {A} (a : A) : ReaderT S M A := ReaderT.mk \{s := Applicative.pure a};
     ap {A B} : ReaderT S M (A -> B) -> ReaderT S M A -> ReaderT S M B
-      | (mkReaderT mf) (mkReaderT ma) :=
-        mkReaderT \{s := Applicative.ap (mf s) (ma s)};
+      | (ReaderT.mk mf) (ReaderT.mk ma) :=
+        ReaderT.mk \{s := Applicative.ap (mf s) (ma s)};
   };
 
 instance
 ReaderT-Monad
   {S : Type} {M : Type → Type} {{mon : Monad M}} : Monad (ReaderT S M) :=
-  mkMonad@{
+  Monad.mk@{
     applicative := ReaderT-Applicative;
     bind
       {A B : Type}
       (x : ReaderT S M A)
       (f : A → ReaderT S M B)
       : ReaderT S M B :=
-      mkReaderT
+      ReaderT.mk
         λ{s :=
           do {
             a <- runReader s x;
@@ -56,18 +56,18 @@ ReaderT-Monad
 instance
 ReaderT-Reader
   {S : Type} {M : Type → Type} {{Monad M}} : Reader S (ReaderT S M) :=
-  mkReader@{
-    ask : ReaderT S M S := mkReaderT λ{s := Applicative.pure s};
+  Reader.mk@{
+    ask : ReaderT S M S := ReaderT.mk λ{s := Applicative.pure s};
     local {A} (f : S -> S) (m : ReaderT S M A) : ReaderT S M A :=
-      mkReaderT \{s := runReader (f s) m};
+      ReaderT.mk \{s := runReader (f s) m};
   };
 
 liftReaderT {R A : Type} {M : Type → Type} (m : M A) : ReaderT R M A :=
-  mkReaderT (const m);
+  ReaderT.mk (const m);
 
 instance
 ReaderT-MonadTransformer {R : Type} : MonadTransformer (ReaderT R) :=
-  mkMonadTransformer@{
+  MonadTransformer.mk@{
     lift {A : Type} {M : Type -> Type} {{Monad M}} (x : M A) : ReaderT R M A :=
       liftReaderT x;
   };
@@ -79,9 +79,9 @@ ReaderT-State
   {{Monad M}}
   {{State S M}}
   : State S (ReaderT R M) :=
-  mkState@{
+  State.mk@{
     state {A : Type} (f : S -> Pair A S) : ReaderT R M A :=
-      mkReaderT \{_ := State.state f};
+      ReaderT.mk \{_ := State.state f};
   };
 
 instance
@@ -91,7 +91,7 @@ ReaderT-Error
   {{Monad M}}
   {{Error E M}}
   : Error E (ReaderT R M) :=
-  mkError@{
+  Error.mk@{
     throw {A : Type} (err : E) : ReaderT R M A :=
-      mkReaderT \{_ := Error.throw err};
+      ReaderT.mk \{_ := Error.throw err};
   };

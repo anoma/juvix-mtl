@@ -10,7 +10,7 @@ package : Package :=
         major := 0;
         minor := 3;
         patch := 0;
-        release := just "rc.2";
+        release := just "rc.3";
       };
-    dependencies := [github "anoma" "juvix-stdlib" "v0.11.0-rc.3"];
+    dependencies := [github "anoma" "juvix-stdlib" "v0.11.0-rc.4"];
   };

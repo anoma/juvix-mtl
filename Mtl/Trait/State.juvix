@@ -8,6 +8,8 @@ type State (S : Type) (M : Type -> Type) :=
     state : {A : Type} -> (S -> Pair A S) -> M A;
   };
 
+open State using {mkState} public;
+
 open State public;
 
 get {S} {M : Type -> Type} {{Monad M}} {{State S M}} : M S :=

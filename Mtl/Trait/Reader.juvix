@@ -9,4 +9,6 @@ type Reader (R : Type) (M : Type -> Type) :=
     local : {A : Type} -> (R -> R) -> M A -> M A;
   };
 
+open Reader using {mkReader} public;
+
 open Reader public;

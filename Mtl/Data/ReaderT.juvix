@@ -11,6 +11,8 @@ type ReaderT (S : Type) (M : Type → Type) (A : Type) :=
     runReaderT : S → M A;
   };
 
+open ReaderT using {mkReaderT} public;
+
 runReader {S A : Type} {M : Type → Type} (r : S) (m : ReaderT S M A) : M A :=
   ReaderT.runReaderT m r;
 

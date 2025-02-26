@@ -8,4 +8,6 @@ type MonadTransformer (T : (Type -> Type) -> Type -> Type) :=
     lift : {A : Type} -> {M : Type -> Type} -> {{Monad M}} -> M A -> T M A;
   };
 
+open MonadTransformer using {mkMonadTransformer} public;
+
 open MonadTransformer public;

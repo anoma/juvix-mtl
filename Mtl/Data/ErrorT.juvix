@@ -10,6 +10,8 @@ type ErrorT (Err : Type) (M : Type → Type) (A : Type) :=
     runErrorT : M (Result Err A);
   };
 
+open ErrorT using {mkErrorT} public;
+
 runError {Err A} {M : Type -> Type} : ErrorT Err M A -> M (Result Err A) :=
   ErrorT.runErrorT;
 

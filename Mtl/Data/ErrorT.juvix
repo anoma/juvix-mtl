@@ -6,7 +6,7 @@ import Mtl.Trait.Reader open;
 import Stdlib.Prelude open;
 
 type ErrorT (Err : Type) (M : Type → Type) (A : Type) :=
-  mkErrorT@{
+  mk@{
     runErrorT : M (Result Err A);
   };
 
@@ -16,18 +16,18 @@ runError {Err A} {M : Type -> Type} : ErrorT Err M A -> M (Result Err A) :=
 instance
 ErrorT-Functor
   {Err : Type} {M : Type -> Type} {{Functor M}} : Functor (ErrorT Err M) :=
-  mkFunctor@{
+  Functor.mk@{
     map {A B : Type} (f : A -> B) : ErrorT Err M A -> ErrorT Err M B
-      | (mkErrorT x) := mkErrorT (Functor.map (Functor.map f) x);
+      | (ErrorT.mk x) := ErrorT.mk (Functor.map (Functor.map f) x);
   };
 
 instance
 ErrorT-Applicative
   {Err : Type} {M : Type -> Type} {{Monad M}} : Applicative (ErrorT Err M) :=
-  mkApplicative@{
+  Applicative.mk@{
     ap {A B} : ErrorT Err M (A -> B) -> ErrorT Err M A -> ErrorT Err M B
-      | (mkErrorT ef) (mkErrorT ev) :=
-        mkErrorT
+      | (ErrorT.mk ef) (ErrorT.mk ev) :=
+        ErrorT.mk
           do {
             mf <- ef;
             case mf of {
@@ -43,16 +43,16 @@ ErrorT-Applicative
                 }
             };
           };
-    pure {A} (a : A) : ErrorT Err M A := mkErrorT (Applicative.pure (ok a));
+    pure {A} (a : A) : ErrorT Err M A := ErrorT.mk (Applicative.pure (ok a));
   };
 
 instance
 ErrorT-Monad
   {Err : Type} {M : Type -> Type} {{Monad M}} : Monad (ErrorT Err M) :=
-  mkMonad@{
+  Monad.mk@{
     bind
       {A B} (x : ErrorT Err M A) (f : A -> ErrorT Err M B) : ErrorT Err M B :=
-      mkErrorT
+      ErrorT.mk
         do {
           a <- runError x;
           case a of {
@@ -65,8 +65,8 @@ ErrorT-Monad
 instance
 ErrorT-Error
   {Err} {M : Type -> Type} {{mon : Monad M}} : Error Err (ErrorT Err M) :=
-  mkError@{
-    throw {A} (err : Err) : ErrorT Err M A := mkErrorT (pure (error err));
+  Error.mk@{
+    throw {A} (err : Err) : ErrorT Err M A := ErrorT.mk (pure (error err));
   };
 
 instance
@@ -76,9 +76,9 @@ ErrorT-State
   {{Monad M}}
   {{State S M}}
   : State S (ErrorT E M) :=
-  mkState@{
+  State.mk@{
     state {A : Type} (f : S -> Pair A S) : ErrorT E M A :=
-      mkErrorT (ok <$> State.state f);
+      ErrorT.mk (ok <$> State.state f);
   };
 
 instance
@@ -88,8 +88,8 @@ ErrorT-Reader
   {{Monad M}}
   {{Reader R M}}
   : Reader R (ErrorT E M) :=
-  mkReader@{
-    ask : ErrorT E M R := mkErrorT (ok <$> Reader.ask);
+  Reader.mk@{
+    ask : ErrorT E M R := ErrorT.mk (ok <$> Reader.ask);
     local {A} (f : R -> R) (m : ErrorT E M A) : ErrorT E M A :=
-      mkErrorT (Reader.local f (runError m));
+      ErrorT.mk (Reader.local f (runError m));
   };

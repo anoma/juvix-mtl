@@ -5,6 +5,12 @@ import PackageDescription.V2 open;
 package : Package :=
   defaultPackage@{
     name := "mtl";
-    version := mkVersion 0 2 1;
-    dependencies := [github "anoma" "juvix-stdlib" "v0.10.1"];
+    version :=
+      mkVersion@{
+        major := 0;
+        minor := 3;
+        patch := 0;
+        release := just "rc.5";
+      };
+    dependencies := [github "anoma" "juvix-stdlib" "v0.11.0-rc.5"];
   };

@@ -4,8 +4,8 @@ import Stdlib.Prelude open;
 
 trait
 type MonadTransformer (T : (Type -> Type) -> Type -> Type) :=
-  mkMonadTransformer@{
+  mk@{
     lift : {A : Type} -> {M : Type -> Type} -> {{Monad M}} -> M A -> T M A;
   };
 
-open MonadTransformer public;
+open MonadTransformer using {lift} public;

@@ -9,7 +9,7 @@ package : Package :=
       mkVersion@{
         major := 0;
         minor := 3;
-        patch := 0;
+        patch := 1;
       };
-    dependencies := [github "anoma" "juvix-stdlib" "v0.11.0"];
+    dependencies := [github "anoma" "juvix-stdlib" "v0.11.1"];
   };

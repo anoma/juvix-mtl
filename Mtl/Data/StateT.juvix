@@ -15,6 +15,14 @@ runState
   {S A : Type} {M : Type → Type} (s : S) (m : StateT S M A) : M (Pair A S) :=
   StateT.runStateT m s;
 
+execState
+  {S A : Type}
+  {M : Type → Type}
+  {{Functor M}}
+  (s : S)
+  (m : StateT S M A)
+  : M S := Functor.map snd (runState s m);
+
 evalState
   {S A : Type}
   {M : Type → Type}
